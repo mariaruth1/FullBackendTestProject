@@ -1,6 +1,7 @@
-using System.Net;
+using Bogus;
 using Dapper;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -19,16 +20,19 @@ public class GETBooks
     [Test]
     public async Task GetAllBooksTest()
     {
-        //Arrange
+   
         Helper.TriggerRebuild();
-        var expected = new List<Book>();
+        var expected = new List<object>();
         for (var i = 1; i < 10; i++)
         {
-
-            var book = Helper.MakeRandomBookWithId(i);
+            var book = new Book()
+            {
+                BookId = i,
+                Title = new Faker().Random.Word(),
+                Publisher = new Faker().Random.Word(),
+                CoverImgUrl = new Faker().Random.Word(),
+            };
             expected.Add(book);
-            //Note if you're reading this: There is a more performant way of making "bulk" inserts rather than loops,
-            //but since this is simply 10 inserts, it's "good enough"
             var sql = $@" 
             insert into library.books (title, publisher, coverimgurl) VALUES (@title, @publisher, @coverImgUrl);
             ";
@@ -37,17 +41,16 @@ public class GETBooks
                 conn.Execute(sql, book);
             }
         }
-        var expeectedStatusCode = HttpStatusCode.OK;
-        
-        //Act
+
+ 
         var response = await _httpClient.GetAsync("http://localhost:5000/api/books");
         var content = await response.Content.ReadAsStringAsync();
         var actualBooks = JsonConvert.DeserializeObject<IEnumerable<Book>>(content)!;
-        
-        //ASSERT
-        actualBooks.Should().BeEquivalentTo(expected);
-        response.StatusCode.Should().Be(expeectedStatusCode);
-
-
+     
+        using (new AssertionScope())
+        {
+            actualBooks.Should().BeEquivalentTo(expected, Helper.MyBecause(actualBooks, expected));
+            response.IsSuccessStatusCode.Should().BeTrue();
+        }
     }
 }

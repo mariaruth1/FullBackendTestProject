@@ -23,4 +23,10 @@ public class Service
             throw new Exception("Could not get books");
         }
     }
+
+    public Book CreateBook(string title, string publisher, string coverImgUrl)
+    {
+        throw new NotImplementedException();
+    }
+
 }

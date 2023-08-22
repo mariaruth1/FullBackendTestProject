@@ -21,6 +21,12 @@ public class Repository
             return conn.Query<Book>(sql);
         }
     }
-    
-    
+
+
+    public Book CreateBook(string title, string publisher, string coverImgUrl)
+    {
+        throw new NotImplementedException();
+    }
+
+
 }

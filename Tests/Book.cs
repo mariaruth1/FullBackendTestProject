@@ -1,4 +1,4 @@
-namespace infrastructure.DataModels;
+namespace Tests;
 
 public class Book
 {

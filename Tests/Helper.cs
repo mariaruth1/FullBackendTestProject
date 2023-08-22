@@ -1,14 +1,11 @@
-
-namespace Tests;
-
-using Bogus;
 using Dapper;
 using Newtonsoft.Json;
 using Npgsql;
 
+namespace Tests;
+
 public static class Helper
 {
-    
     public static readonly Uri Uri = new Uri(Environment.GetEnvironmentVariable("pgconn")!);
 
     public static readonly string
@@ -37,39 +34,6 @@ public static class Helper
         string actualJson = JsonConvert.SerializeObject(actual, Formatting.Indented);
 
         return $"because we want these objects to be equivalent:\nExpected:\n{expectedJson}\nActual:\n{actualJson}";
-    }
-
-    public static Book MakeRandomBookWithId(int id)
-    {
-        return new Faker<Book>()
-            .RuleFor(b => b.BookId, id)
-            .RuleFor(b => b.Publisher, p => p.Company.CompanyName())
-            .RuleFor(b => b.Title, t => t.Lorem.Sentence())
-            .RuleFor(b => b.CoverImgUrl, "https://picsum.photos/200/300")
-            .Generate();
-    }
-
-    public static EndUser MakeRandomUserWithId(int id)
-    {
-        return new Faker<EndUser>()
-            .RuleFor(u => u.EndUserId, id)
-            .RuleFor(u => u.PasswordHash, h => h.Random.Word())
-            .RuleFor(u => u.Salt, h => h.Random.Word())
-            .RuleFor(u => u.Email, e => e.Person.Email)
-            .RuleFor(u => u.ProfileImgUrl, pr => pr.Random.Int(50))
-            .RuleFor(u => u.Status, st => st.Random.Word())
-            .RuleFor(u => u.Role, r => r.Random.Word())
-            .Generate();
-    }
-
-    public static Author MakeRandomAuthorWithId(int id)
-    {
-        return new Faker<Author>()
-            .RuleFor(a => a.AuthorId, id)
-            .RuleFor(a => a.Bithday, b => b.Date.Recent())
-            .RuleFor(a => a.Name, n => n.Name.FullName())
-            .RuleFor(a => a.Nationality, n => n.Lorem.Word())
-            .Generate();
     }
 
     public static string RebuildScript = $@"DROP SCHEMA IF EXISTS library CASCADE;
